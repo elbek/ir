@@ -13,11 +13,21 @@ public final class CompressorUtil {
         return offset;
     }
 
-    public static int readVInt(byte[] data, int[] offsetArray) {
-        byte b = data[offsetArray[0]++];
+    public static int getVIntLen(int i) {
+        int len = 0;
+        while ((i & ~0x7F) != 0) {
+            len++;
+            i >>>= 7;
+        }
+        len++;
+        return len;
+    }
+
+    public static int readVInt(byte[] data, int offset) {
+        byte b = data[offset++];
         int i = b & 0x7F;
         for (int shift = 7; (b & 0x80) != 0; shift += 7) {
-            b = data[offsetArray[0]++];
+            b = data[offset++];
             i |= (b & 0x7F) << shift;
         }
         return i;
